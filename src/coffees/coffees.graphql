@@ -1,4 +1,22 @@
-type Coffee {
+scalar Date
+
+interface Drink {
+  name: String!
+}
+
+type Tea implements Drink {
+  id: ID!
+  name: String!
+  brand: String!
+  createdAt: Date
+}
+
+enum CoffeeType {
+  ARABICA
+  ROBUSTA
+}
+
+type Coffee implements Drink {
   """
   A unique identifier.
   """
@@ -6,6 +24,8 @@ type Coffee {
   name: String!
   brand: String!
   flavors: [Flavor!]
+  createdAt: Date
+  type: CoffeeType
 }
 
 type Flavor {
@@ -23,6 +43,7 @@ input CreateCoffeeInput {
   name: String!
   brand: String!
   flavors: [String!]!
+  type: CoffeeType
 }
 
 """
@@ -35,15 +56,38 @@ input UpdateCoffeeInput {
   name: String
   brand: String
   flavors: [String!]!
+  type: CoffeeType
 }
+
+input CreateTeaInput {
+  name: String!
+  brand: String!
+}
+
+input UpdateTeaInput {
+  name: String!
+  brand: String!
+}
+
+union DrinksResultUnion = Coffee | Tea
 
 type Query {
   coffees: [Coffee!]!
   coffee(id: ID!): Coffee!
+  teas: [Tea!]!
+  tea(id: ID!): Tea!
+  drinks: [DrinksResultUnion!]!
 }
 
 type Mutation {
   createCoffee(createCoffeeInput: CreateCoffeeInput!): Coffee!
   updateCoffee(id: ID!, updateCoffeeInput: UpdateCoffeeInput!): Coffee!
   removeCoffee(id: ID!): Coffee!
+  createTea(createTeaInput: CreateTeaInput!): Tea!
+  updateTea(id: ID!, updateTeaInput: UpdateTeaInput!): Tea!
+  removeTea(id: ID!): Tea!
+}
+
+type Subscription {
+  coffeeAdded: Coffee!
 }
